@@ -1,250 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Restaurant Ordering App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f0f2f5;
-    }
-    header {
-      background: #1e88e5;
-      padding: 18px;
-      color: white;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .category {
-      margin: 20px;
-      background: white;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 3px 7px rgba(0,0,0,0.15);
-    }
-
-    .category h2 {
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fafafa;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 10px;
-      border: 1px solid #e0e0e0;
-    }
-
-    .item img {
-      width: 40px;
-      height: 40px;
-      border-radius: 6px;
-      margin-right: 10px;
-    }
-
-    .left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    input[type='number'] {
-      width: 70px;
-      padding: 5px;
-      font-size: 16px;
-    }
-
-    #summary {
-      background: #fff;
-      padding: 15px;
-      margin: 20px;
-      border-radius: 12px;
-      display: none;
-      box-shadow: 0 3px 7px rgba(0,0,0,0.15);
-    }
-
-    button {
-      padding: 15px;
-      width: 90%;
-      margin: 20px 5%;
-      background: #43a047;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 18px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .edit-btn {
-      background: #ff9800;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-    }
-
-    .delete-btn {
-      background: #e53935;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-    }
-
-    #addForm {
-      background: white;
-      margin: 20px;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 3px 7px rgba(0,0,0,0.15);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restaurant Ordering App</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #fceabb, #f8b500); }
+  header { background: #ff5722; padding: 20px; color: white; font-size: 24px; text-align: center; font-weight: bold; }
+  .category { margin: 15px; background: #fff; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); overflow: hidden; }
+  .category h2 { margin: 0; padding: 15px; cursor: pointer; background: #ff9800; color: white; display: flex; justify-content: space-between; align-items: center; }
+  .items { display: none; padding: 10px; }
+  .item { display: flex; justify-content: space-between; align-items: center; background: #fafafa; padding: 10px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; }
+  .item img { width: 40px; height: 40px; border-radius: 6px; margin-right: 10px; }
+  .left { display: flex; align-items: center; gap: 10px; }
+  input[type='number'], input[type='text'] { width: 70px; padding: 5px; font-size: 16px; }
+  button { padding: 12px; width: 90%; margin: 10px 5%; background: #4caf50; color: white; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+  .edit-btn { background: #ff9800; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: white; margin-left: 5px; }
+  .delete-btn { background: #e53935; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: white; margin-left: 5px; }
+  #addForm { background: white; margin: 15px; padding: 15px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+  #summary { background: #fff; padding: 15px; margin: 15px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: none; }
+  #search { width: 90%; padding: 12px; margin: 10px 5%; font-size: 16px; border-radius: 10px; border: 1px solid #ccc; }
+</style>
 </head>
 <body>
-
 <header>Restaurant Ordering App</header>
-
-<div style='padding: 15px;'>
-  <input id="search" onkeyup="searchItems()" placeholder="Search item..." style="width:100%; padding:12px; font-size:16px; border-radius:10px; border:1px solid #ccc;" />
-</div>
-
+<div><input id="search" onkeyup="searchItems()" placeholder="Search item..." /></div>
 <div id="app"></div>
-
 <div id="addForm">
-  <h3>Add New Item</h3>
-  <input id="newName" placeholder="Item name" />
+  <h3>Add New Category / Item</h3>
+  <input id="newName" placeholder="Item or Category name" />
   <input id="newImg" placeholder="Image URL (optional)" />
   <select id="newCat"></select>
   <button onclick="addItem()">Add Item</button>
+  <button onclick="addCategory()">Add Category</button>
 </div>
-
 <button onclick="generateSummary()">Generate WhatsApp Order</button>
-
 <div id="summary"></div>
-
 <script>
-  const categories = {
-    "Bread": [],
-    "Vegetables": [],
-    "Proteins": [],
-    "Cheese": [],
-    "Fries": [],
-    "Sauces": [],
-    "Grains": [],
-    "Cleaning": []
-  };
+let categories = {
+  "Bread": [],
+  "Vegetables": [],
+  "Proteins": [],
+  "Cheese": [],
+  "Fries": [],
+  "Sauces": [],
+  "Grains": [],
+  "Cleaning": []
+};
 
-  const images = {
-    "Pain normal burger": "https://i.imgur.com/0ZLhS.png",
-    "Salad": "https://i.imgur.com/0ZLhS.png"
-  };
+if (localStorage.categories) { categories = JSON.parse(localStorage.categories); }
 
-  // Auto-load saved data
-  if (localStorage.items) {
-    Object.assign(categories, JSON.parse(localStorage.items));
-  }
+const appDiv = document.getElementById('app');
+const newCat = document.getElementById('newCat');
 
-  const appDiv = document.getElementById('app');
-  const newCat = document.getElementById('newCat');
+function refreshCatOptions() { newCat.innerHTML = ''; for (let c in categories) newCat.innerHTML += `<option>${c}</option>`; }
+refreshCatOptions();
 
-  Object.keys(categories).forEach(c => {
-    newCat.innerHTML += `<option>${c}</option>`;
-  });
-
-  function render() {
-    appDiv.innerHTML = '';
-
-    for (let cat in categories) {
-      let block = `<div class='category'><h2>${cat}</h2>`;
-
-      categories[cat].forEach((item, index) => {
-        block += `
-          <div class='item'>
-            <div class='left'>
-              <img src='${item.img || "https://via.placeholder.com/40"}' />
-              <strong>${item.name}</strong>
-            </div>
-            <input type='number' id='${item.name}' placeholder='0' />
-            <span class='edit-btn' onclick="editItem('${cat}', ${index})">Edit</span>
-            <span class='delete-btn' onclick="deleteItem('${cat}', ${index})">X</span>
-          </div>`;
-      });
-
-      block += `</div>`;
-      appDiv.innerHTML += block;
-    }
-  }
-
-  function save() {
-    localStorage.items = JSON.stringify(categories);
-  }
-
-  function addItem() {
-    const name = document.getElementById('newName').value;
-    const img = document.getElementById('newImg').value;
-    const cat = document.getElementById('newCat').value;
-
-    if (!name) return alert("Enter item name");
-
-    categories[cat].push({ name, img });
-    save();
-    render();
-
-  function searchItems() {
-    const term = document.getElementById('search').value.toLowerCase();
-    const allItems = document.querySelectorAll('.item');
-
-    allItems.forEach(i => {
-      const name = i.querySelector('strong').innerText.toLowerCase();
-      i.style.display = name.includes(term) ? 'flex' : 'none';
+function render() {
+  appDiv.innerHTML = '';
+  for (let cat in categories) {
+    let block = `<div class='category'><h2 onclick="toggleItems('${cat}')">${cat} <span>▼</span></h2><div class='items' id='items-${cat}'>`;
+    categories[cat].forEach((item,index)=>{
+      block += `<div class='item'><div class='left'><img src='${item.img||"https://via.placeholder.com/40"}'/><strong>${item.name}</strong></div><input type='number' id='${item.name}' placeholder='0'/><span class='edit-btn' onclick="editItem('${cat}',${index})">Edit</span><span class='delete-btn' onclick="deleteItem('${cat}',${index})">X</span></div>`;
     });
+    block += `<div class='item'><input type='text' placeholder='Other item...' id='other-${cat}' /></div>`;
+    block += `</div></div>`;
+    appDiv.innerHTML += block;
   }
+}
+
+function toggleItems(cat) {
+  const div = document.getElementById(`items-${cat}`);
+  div.style.display = div.style.display==='block'?'none':'block';
+}
+
+function save() { localStorage.categories = JSON.stringify(categories); }
+
+function addItem(){
+  const name=document.getElementById('newName').value;
+  const img=document.getElementById('newImg').value;
+  const cat=document.getElementById('newCat').value;
+  if(!name) return alert('Enter item name');
+  categories[cat].push({name,img});
+  save(); render();
+}
+
+function addCategory(){
+  const name=document.getElementById('newName').value;
+  if(!name) return alert('Enter category name');
+  categories[name]=[]; save(); render(); refreshCatOptions();
+}
+
+function deleteItem(cat,index){ categories[cat].splice(index,1); save(); render(); }
+function editItem(cat,index){ const newName=prompt('New name',categories[cat][index].name); if(!newName) return; categories[cat][index].name=newName; save(); render(); }
+
+function searchItems(){
+  const term=document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('.item').forEach(i=>{
+    const name=i.querySelector('strong')?.innerText.toLowerCase()||'';
+    i.style.display=name.includes(term)?'flex':'none';
+  });
+}
+
+function generateSummary(){
+  let text='Your Order for Monday:%0A%0A';
+  for(let cat in categories){
+    text+=`*${cat}*%0A`;
+    categories[cat].forEach(item=>{
+      const qty=document.getElementById(item.name)?.value;
+      if(qty>0) text+=`${item.name}: ${qty}%0A`;
+    });
+    const otherQty=document.getElementById(`other-${cat}`)?.value;
+    if(otherQty) text+=`Other (${cat}): ${otherQty}%0A`;
+    text+='%0A';
   }
+  window.open(`https://wa.me/?text=${text}`);
+}
 
-  function deleteItem(cat, index) {
-    categories[cat].splice(index, 1);
-    save();
-    render();
-  }
-
-  function editItem(cat, index) {
-    const newName = prompt("New name", categories[cat][index].name);
-    if (!newName) return;
-    categories[cat][index].name = newName;
-    save();
-    render();
-  }
-
-  function generateSummary() {
-    let text = "Your Order for Monday:%0A%0A";
-
-    for (let cat in categories) {
-      text += `*${cat}*%0A`;
-
-      categories[cat].forEach(item => {
-        const qty = document.getElementById(item.name).value;
-        if (qty > 0) text += `${item.name}: ${qty}%0A`;
-      });
-
-      text += `%0A`;
-    }
-
-    window.open(`https://wa.me/?text=${text}`);
-  }
-
-  render();
+render();
 </script>
-
 </body>
 </html>
