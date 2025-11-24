@@ -4,22 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Restaurant Ordering App</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  body { font-family: Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #fceabb, #f8b500); }
-  header { background: #ff5722; padding: 20px; color: white; font-size: 24px; text-align: center; font-weight: bold; }
-  .category { margin: 15px; background: #fff; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); overflow: hidden; }
-  .category h2 { margin: 0; padding: 15px; cursor: pointer; background: #ff9800; color: white; display: flex; justify-content: space-between; align-items: center; }
-  .items { display: none; padding: 10px; }
-  .item { display: flex; justify-content: space-between; align-items: center; background: #fafafa; padding: 10px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; }
-  .item img { width: 40px; height: 40px; border-radius: 6px; margin-right: 10px; }
-  .left { display: flex; align-items: center; gap: 10px; }
-  input[type='number'], input[type='text'] { width: 70px; padding: 5px; font-size: 16px; }
-  button { padding: 12px; width: 90%; margin: 10px 5%; background: #4caf50; color: white; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
-  .edit-btn { background: #ff9800; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: white; margin-left: 5px; }
-  .delete-btn { background: #e53935; padding: 5px 8px; border-radius: 6px; cursor: pointer; color: white; margin-left: 5px; }
-  #addForm { background: white; margin: 15px; padding: 15px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-  #summary { background: #fff; padding: 15px; margin: 15px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: none; }
-  #search { width: 90%; padding: 12px; margin: 10px 5%; font-size: 16px; border-radius: 10px; border: 1px solid #ccc; }
+body { margin: 0; font-family: 'Roboto', sans-serif; background: #fafafa; color: #333; }
+header { background: #f0f0f0; padding: 20px; color: #333; font-size: 24px; text-align: center; font-weight: 700; }
+#search { width: 90%; padding: 12px; margin: 10px 5%; font-size: 16px; border-radius: 12px; border: 1px solid #ccc; }
+.category { margin: 15px; border-radius: 15px; overflow: hidden; }
+.category h2 { margin: 0; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: #333; background: #e0e0e0; border-radius: 12px; transition: background 0.3s; }
+.category h2:hover { background: #d0d0d0; }
+.items { display: none; padding: 10px; background: #fff; border-radius: 12px; }
+.item-card { display: flex; flex-direction: column; background: #fff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 10px; margin: 10px 0; }
+.item-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.item-top strong { font-size: 16px; flex: 1; word-break: break-word; }
+.item-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+button { padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; transition: transform 0.2s; }
+button:hover { transform: scale(1.05); }
+.edit-btn { background: #FFA500; color: #fff; }
+.delete-btn { background: #FF4C4C; color: #fff; }
+.quick-btn { background: #1E90FF; color: #fff; }
+.add-btn { background: #32CD32; color: #fff; margin: 5px 0; }
+#addForm { background: #fff; margin: 15px; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+#summary { background: #fff; padding: 15px; margin: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
+@media(max-width:600px){
+.item-top { flex-direction: column; align-items: flex-start; }
+.item-actions { flex-direction: row; overflow-x: auto; }
+.item-actions button { flex: 0 0 auto; }
+}
 </style>
 </head>
 <body>
@@ -27,96 +37,45 @@
 <div><input id="search" onkeyup="searchItems()" placeholder="Search item..." /></div>
 <div id="app"></div>
 <div id="addForm">
-  <h3>Add New Category / Item</h3>
-  <input id="newName" placeholder="Item or Category name" />
-  <input id="newImg" placeholder="Image URL (optional)" />
-  <select id="newCat"></select>
-  <button onclick="addItem()">Add Item</button>
-  <button onclick="addCategory()">Add Category</button>
+<h3>Add New Category / Item</h3>
+<input id="newName" placeholder="Item or Category name" />
+<select id="newCat"></select>
+<button class="add-btn" onclick="addItem()">Add Item</button>
+<button class="add-btn" onclick="addCategory()">Add Category</button>
 </div>
-<button onclick="generateSummary()">Generate WhatsApp Order</button>
+<button class="add-btn" onclick="generateSummary()">Generate WhatsApp Order</button>
+<button class="add-btn" onclick="exportCSV()">Export CSV</button>
 <div id="summary"></div>
 <script>
-let categories = {
-  "Bread": [],
-  "Vegetables": [],
-  "Proteins": [],
-  "Cheese": [],
-  "Fries": [],
-  "Sauces": [],
-  "Grains": [],
-  "Cleaning": []
-};
+const categoryColors = {"Bread":"#f7e7c6","Vegetables":"#c6f7d4","Proteins":"#f7d9c6","Cheese":"#fff2b2","Fries":"#ffe0b2","Sauces":"#fcd5c5","Grains":"#e6d6b9","Cleaning":"#dbe7f0"};
 
-if (localStorage.categories) { categories = JSON.parse(localStorage.categories); }
-
-const appDiv = document.getElementById('app');
-const newCat = document.getElementById('newCat');
-
-function refreshCatOptions() { newCat.innerHTML = ''; for (let c in categories) newCat.innerHTML += `<option>${c}</option>`; }
+let categories = {"Bread": [{name:"Pain normal burger",qty:20},{name:"Pain pita",qty:1},{name:"Wrap/Chapati",qty:10},{name:"Hot dog steak",qty:1}],"Vegetables":[{name:"Salad",qty:35},{name:"Onion red",qty:5},{name:"Pickles",qty:7}],"Proteins":[{name:"Steak veg",qty:8}],"Cheese":[{name:"Cheddar",qty:2}],"Fries":[{name:"Frit",qty:1}],"Sauces":[{name:"Sauce rose",qty:2}],"Grains":[{name:"Riz basmati",qty:5}],"Cleaning":[{name:"Liquide vaisselle",qty:2}]};
+if(localStorage.categories){categories=JSON.parse(localStorage.categories);}
+const appDiv=document.getElementById('app');
+const newCat=document.getElementById('newCat');
+function refreshCatOptions(){newCat.innerHTML='';for(let c in categories)newCat.innerHTML+=`<option>${c}</option>`;}
 refreshCatOptions();
-
-function render() {
-  appDiv.innerHTML = '';
-  for (let cat in categories) {
-    let block = `<div class='category'><h2 onclick="toggleItems('${cat}')">${cat} <span>▼</span></h2><div class='items' id='items-${cat}'>`;
-    categories[cat].forEach((item,index)=>{
-      block += `<div class='item'><div class='left'><img src='${item.img||"https://via.placeholder.com/40"}'/><strong>${item.name}</strong></div><input type='number' id='${item.name}' placeholder='0'/><span class='edit-btn' onclick="editItem('${cat}',${index})">Edit</span><span class='delete-btn' onclick="deleteItem('${cat}',${index})">X</span></div>`;
-    });
-    block += `<div class='item'><input type='text' placeholder='Other item...' id='other-${cat}' /></div>`;
-    block += `</div></div>`;
-    appDiv.innerHTML += block;
-  }
-}
-
-function toggleItems(cat) {
-  const div = document.getElementById(`items-${cat}`);
-  div.style.display = div.style.display==='block'?'none':'block';
-}
-
-function save() { localStorage.categories = JSON.stringify(categories); }
-
-function addItem(){
-  const name=document.getElementById('newName').value;
-  const img=document.getElementById('newImg').value;
-  const cat=document.getElementById('newCat').value;
-  if(!name) return alert('Enter item name');
-  categories[cat].push({name,img});
-  save(); render();
-}
-
-function addCategory(){
-  const name=document.getElementById('newName').value;
-  if(!name) return alert('Enter category name');
-  categories[name]=[]; save(); render(); refreshCatOptions();
-}
-
-function deleteItem(cat,index){ categories[cat].splice(index,1); save(); render(); }
-function editItem(cat,index){ const newName=prompt('New name',categories[cat][index].name); if(!newName) return; categories[cat][index].name=newName; save(); render(); }
-
-function searchItems(){
-  const term=document.getElementById('search').value.toLowerCase();
-  document.querySelectorAll('.item').forEach(i=>{
-    const name=i.querySelector('strong')?.innerText.toLowerCase()||'';
-    i.style.display=name.includes(term)?'flex':'none';
-  });
-}
-
-function generateSummary(){
-  let text='Your Order for Monday:%0A%0A';
-  for(let cat in categories){
-    text+=`*${cat}*%0A`;
-    categories[cat].forEach(item=>{
-      const qty=document.getElementById(item.name)?.value;
-      if(qty>0) text+=`${item.name}: ${qty}%0A`;
-    });
-    const otherQty=document.getElementById(`other-${cat}`)?.value;
-    if(otherQty) text+=`Other (${cat}): ${otherQty}%0A`;
-    text+='%0A';
-  }
-  window.open(`https://wa.me/?text=${text}`);
-}
-
+function render(){appDiv.innerHTML='';
+for(let cat in categories){
+let block=`<div class='category'><h2 style='background:${categoryColors[cat]||"#e0e0e0"}' onclick="toggleItems('${cat}')">${cat} <span>▼</span></h2><div class='items' id='items-${cat}'>`;
+categories[cat].forEach((item,index)=>{
+block+=`<div class='item-card'><div class='item-top'><strong>${item.name}</strong><input type='number' value='${item.qty}' id='${cat}-${item.name}'/></div><div class='item-actions'><button class='quick-btn' onclick="quickAdd('${cat}','${item.name}',1)">+1</button><button class='quick-btn' onclick="quickAdd('${cat}','${item.name}',5)">+5</button><button class='edit-btn' onclick="editItem('${cat}',${index})">Edit</button><button class='delete-btn' onclick="deleteItem('${cat}',${index})">Delete</button></div></div>`;
+});
+block+=`<div class='item-card'><input type='text' placeholder='Other item...' id='other-${cat}' /></div>`;
+block+=`</div></div>`;
+appDiv.innerHTML+=block;
+}}
+function toggleItems(cat){const div=document.getElementById(`items-${cat}`);div.style.display=div.style.display==='block'?'none':'block';}
+function save(){localStorage.categories=JSON.stringify(categories);}
+function addItem(){const name=document.getElementById('newName').value;const cat=document.getElementById('newCat').value;if(!name)return alert('Enter item name');categories[cat].push({name,qty:0});save();render();}
+function addCategory(){const name=document.getElementById('newName').value;if(!name)return alert('Enter category name');categories[name]=[];save();render();refreshCatOptions();}
+function deleteItem(cat,index){categories[cat].splice(index,1);save();render();}
+function editItem(cat,index){const newName=prompt('New name',categories[cat][index].name);if(!newName)return;categories[cat][index].name=newName;save();render();}
+function quickAdd(cat,name,amount){let el=document.getElementById(`${cat}-${name}`);el.value=parseInt(el.value||0)+amount;}
+function searchItems(){const term=document.getElementById('search').value.toLowerCase();document.querySelectorAll('.item-card').forEach(i=>{const name=i.querySelector('strong')?.innerText.toLowerCase()||'';i.style.display=name.includes(term)?'flex':'none';});}
+function generateSummary(){let text='Your Order for Monday:%0A%0A';for(let cat in categories){text+=`*${cat}*%0A`;categories[cat].forEach(item=>{const qty=document.getElementById(`${cat}-${item.name}`)?.value;if(qty>0)text+=`${item.name}: ${qty}%0A`;});const otherQty=document.getElementById(`other-${cat}`)?.value;if(otherQty)text+=`Other (${cat}): ${otherQty}%0A`;text+='%0A';}window.open(`https://wa.me/?text=${text}`);}
+function exportCSV(){let csv='Category,Item,Quantity\n';for(let cat in categories){categories[cat].forEach(item=>{const qty=document.getElementById(`${cat}-${item.name}`)?.value||0;csv+=`${cat},${item.name},${qty}\n`});}
+const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='order.csv';a.click();}
 render();
 </script>
 </body>
